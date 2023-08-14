@@ -175,16 +175,88 @@ JOIN
     e.reports_to = m.employee_id  ## The returned table contain 3 columns: employees' id, employees' first name, and corresponding manager's name
 ```
 
+### 4) Joining Multiple Tables
 
+```sql
+USE invoicing;
+SELECT *
+FROM payments p 
+JOIN clients c
+    ON p.client_id = c.client_id
+JOIN payment_methods pm
+    ON p.payment_method = pm.payment_method_id
+```
 
+### 5) Compound Join Conditions
 
+```sql
+USE store;
+SELECT *
+FROM order_items oi
+JOIN order_item_notes oin
+    ON oi.order_id = oin.order_id
+    AND oi.product_id = oin.product_id
 
+## ON AND are the so called Compound condition, we have multiple conditions to join two tables
 
+```
 
+### 6) Implicit Join Syntax
 
+```sql
+USE store;
+SELECT *
+FROM orders o
+JOIN customers c
+    ON o.customer_id =c.customer_id
+```
 
+--There is another way to write this query using Implicit Join Syntax
 
+```sql
+SELECT *
+FROM orders o, customers c
+WHERE o.customer_id = c.customer_id
+```
+### 7) Outer Joins
 
+```sql
+## INNER JOIN = JOIN (whenever you use JOIN, it means you use INNER JOIN)
+USE store;
+SELECT 
+    c.customer_id,
+	c.first_name,
+    o.order_id
+FROM orders o
+JOIN customers c
+    ON o.customer_id =c.customer_id
+## As there are some customers don't have id in one table, the returned results only contain the samples meet the demand "o.customer_id =c.customer_id", some samples were not returned
+```
 
+``` sql
+SELECT 
+    c.customer_id,
+	c.first_name,
+    o.order_id
+FROM customers c
+LEFT JOIN orders o
+    ON o.customer_id =c.customer_id
+ORDER BY c.customer_id
 
+## returned results contain the NULL result for order_id
+## LEFT JOIN: we will return all the customers no matter whether the condition is true or not;
+## RIGHT JOIN: return same with results of INNER JOIN. In this case, if we want to check all the customers, change the sequence to "FROM orders" "RIGHT JOIN orders o"
+```
+-- Exercise
+```sql
+#Exercise: join the product table and order_items table, select three columns: product_id, name, and quantity, keep the NULL
+USE store;
+SELECT 
+    p.product_id,
+	p.name,
+    oi.quantity
+FROM products p
+LEFT JOIN order_items oi
+    ON p.product_id = oi.product_id
 
+```
