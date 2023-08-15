@@ -260,3 +260,154 @@ LEFT JOIN order_items oi
     ON p.product_id = oi.product_id
 
 ```
+
+### 8) Outer Join Between Multiple tables
+```sql
+USE store;
+SELECT 
+    c.customer_id,
+	c.first_name,
+    o.order_id
+FROM customers c
+LEFT JOIN orders o
+    ON o.customer_id = c.customer_id
+LEFT JOIN shippers sh
+    ON o.shipper_id = sh.shipper_id
+ORDER BY c.customer_id    
+```
+--Exercise
+```sql
+USE store;
+SELECT
+    o.order_date,
+    o.order_id,
+    c.first_name,
+    s.name AS shipper,
+    os.name AS status
+FROM orders o
+LEFT JOIN customers c
+    ON o.customer_id = c.customer_id
+LEFT JOIN shippers s
+    ON o.shipper_id = s.shipper_id
+LEFT JOIN order_statuses os
+    ON o.status = os.order_status_id
+ORDER BY shipper
+```
+### 9) Self Outer Joins
+```sql
+USE sql_hr;
+SELECT
+    e.employee_id,
+    e.first_name,
+    m.first_name AS manager
+FROM employees e
+LEFT JOIN employees m
+    ON e.reports_to = m.employee_id
+```
+
+### 10) The USING Clause
+```sql
+--If columns' names are same, we can use a more simple USING clause to replace ON clause
+USE store;
+SELECT *
+FROM order_items oi
+JOIN order_item_notes oin
+    ON oi.order_id = oin.order_id AND oi.product_id = oin.product_id
+```
+```sql
+USE store;
+SELECT *
+FROM order_items oi
+JOIN order_item_notes oin
+    USING (order_id, product_id)
+```
+### 11) Natural Joins
+```sql
+--Not recommended, Because it can produce unexpected result
+SELECT *
+FROM orders o
+NATURAL JOIN customers c
+```
+
+### 12) Outer Joins
+```sql
+--Do a cross join between shippers and products; using the implicit syntax; and then using the explicit syntax
+USE store;
+SELECT
+    sh.name AS shipper,
+    p.name AS product
+FROM shippers sh, products p 
+ORDER BY sh.name
+```
+
+```sql
+USE store;
+SELECT
+    sh.name AS shipper,
+    p.name AS product
+FROM shippers sh
+CROSS JOIN products p 
+ORDER BY sh.name
+--We use CROSS JOIN to combine or join every record from the first table with every record in the second table
+```
+### 13) Unions
+
+```sql
+-- Combine multiple rows from tables
+USE store;
+SELECT
+    customer_id,
+    first_name,
+    points,
+    'Bronze' AS type
+FROM
+customers
+WHERE points < 2000 
+UNION 
+SELECT
+    customer_id,
+    first_name,
+    points,
+'Silver' AS type
+FROM customers
+WHERE points BETWEEN 2000 AND 3000 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
