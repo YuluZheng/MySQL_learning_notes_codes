@@ -373,27 +373,149 @@ FROM customers
 WHERE points BETWEEN 2000 AND 3000 
 ```
 
+# MySQL Learning: Notes and Codes (Source: Programming with Mosh) _ Part 4
+
+### 1) Column Attributes
+### 2) Inserting a Row
+```sql
+USE store;
+INSERT INTO customers (
+    last_name,
+	first_name,
+    birth_date,
+    address,
+    city,
+    state)
+VALUES (
+    'Smith',
+    'John',
+    '1990-01-01',
+    'adress',
+    'city',
+    'CA'
+    )
+```
+
+### 3) Inserting Multiple Rows
+```sql
+-- Insert three rows in the products table;
+INSERT INTO products (name, quantity_in_stock, unit_price)
+VALUES ('Product1', 10, 1.95),
+    ('Product2', 11, 1.95),
+    ('Product3', 12, 1.95)
+```
+### 4) Inserting Hierarchical Rows
+```sql
+-- How to insert data into multiple tables
+-- 'order' table is parent, while 'order_items' table is child
+INSERT INTO orders (customer_id, order_date, status)
+VALUES (1, '2019-01-02', 1);
+INSERT INTO order_items
+VALUES (LAST_INSERT_ID(), 1, 1, 2.95),
+       (LAST_INSERT_ID(), 2, 1, 3.95)
+```
+### 5) Creating a Copy of a Table
+```sql
+-- How to copy data from one table to another
+CREATE TABLE orders_archived AS 
+SELECT * FROM orders
+```
+
+```sql
+-- If you want to copy only a subset of the table into the new table, e.g., all the orders before 2019
+INSERT INTO orders_archived
+SELECT * 
+FROM orders
+WHERE order_date < '2019-01-01'
+```
+### Exercise
+```sql
+USE invoicing;
+CREATE TABLE invoice_archived AS
+SELECT
+    i.invoice_id,
+    i.number,
+    c.name AS client,
+    i.invoice_total,
+    i.payment_total,
+    i.invoice_date,
+    i.payment_date,
+    i.due_date
+FROM invoices i
+JOIN clients c
+    USING (client_id)
+WHERE payment_date IS NOT NULL
+```
+
+### 6) Updating a Single Row
+```sql
+-- How to update the data in sql
+-- SET Clause: Specify new values for obe or more columns
+UPDATE invoices
+SET payment_total = 10,
+ payment_date ='2019-03-01'
+ WHERE invoice_id = 1 # specify the row
+```
+```sql
+UPDATE invoices
+SET 
+payment_total = invoice_total * 0.5,
+payment_date = due_date
+WHERE invoice_id = 3
+```
 
 
+### 7) Updating Multiple Rows
+```sql
+USE invoices;
+UPDATE invoices
+SET 
+payment_total = invoice_total * 0.5,
+payment_date = due_date
+WHERE client_id IN (3, 4)
+```
+### Exercise
+```sql
+--Write a SQL statement to give any customers born before 1990, 50 extra points
+USE store;
+UPDATE customers
+SET points = points + 50
+WHERE birth_date < '1990-01-01'
+```
 
+### 8) Using Subqueries in Updates
+```sql
+# what if we don't have the corresponding id
+payment_total = invoice_total * 0.5,
+payment_date = due_date
+WHERE client_id IN 
+    (SELECT client_id
+    FROM clients
+    WHERE state IN ('CA','NY')) 
+```
 
+```sql
+USE store;
+UPDATE orders
+SET 
+comments = 'Gold Customer'
+WHERE ponits IN 
+    (SELECT customer_id
+    FROM customers
+    WHERE points > 3000) 
+```
 
+### 9) Deleting Rows
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```sql
+DELETE FROM invoices
+WHERE client_id = (
+    SELECT *
+    FROM clients
+    WHERE name = 'Myworks'
+    )
+```
+### 10) Restoring the database
 
 
 
